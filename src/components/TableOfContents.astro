@@ -1,0 +1,169 @@
+---
+/**
+ * Table of Contents Component
+ * Automatically generates a table of contents from article headings
+ */
+
+interface Heading {
+  id: string;
+  text: string;
+  level: number;
+}
+
+const headings: Heading[] = Astro.props.headings || [];
+---
+
+{
+  headings.length > 0 && (
+    <nav class="toc" aria-label="Table of contents">
+      <h3>Table of Contents</h3>
+      <ul class="toc-list">
+        {headings.map((heading) => (
+          <li class={`toc-item level-${heading.level}`}>
+            <a href={`#${heading.id}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<script>
+  // Extract headings from the article and add IDs if missing
+  const extractHeadings = () => {
+    const article = document.querySelector("article");
+    if (!article) return;
+
+    const headings = article.querySelectorAll("h2, h3, h4");
+    const headingData: Array<{ id: string; text: string; level: number }> = [];
+
+    headings.forEach((heading, index) => {
+      const level = parseInt(heading.tagName.substring(1));
+      let id = heading.id;
+
+      // Add ID if missing
+      if (!id) {
+        id = `heading-${index}`;
+        heading.id = id;
+      }
+
+      headingData.push({
+        id,
+        text: heading.textContent || "",
+        level,
+      });
+    });
+
+    return headingData;
+  };
+
+  // Initialize on page load
+  document.addEventListener("DOMContentLoaded", extractHeadings);
+
+  // Initialize on view transitions (for Astro)
+  document.addEventListener("astro:page-load", extractHeadings);
+
+  // Set active heading on scroll
+  const setActiveHeading = () => {
+    const headingLinks = document.querySelectorAll(".toc a");
+    const article = document.querySelector("article");
+    if (!article) return;
+
+    const scrollPosition = window.scrollY + 100;
+    let currentHeading: string | null = null;
+
+    const headings = article.querySelectorAll("h2[id], h3[id], h4[id]");
+    headings.forEach((heading) => {
+      if (heading.offsetTop <= scrollPosition) {
+        currentHeading = heading.id;
+      }
+    });
+
+    headingLinks.forEach((link) => {
+      const href = link.getAttribute("href");
+      if (href) {
+        if (href.substring(1) === currentHeading) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      }
+    });
+  };
+
+  // Add scroll listener with throttling
+  let ticking = false;
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        setActiveHeading();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+</script>
+
+<style>
+  .toc {
+    background: var(--bg-primary);
+    border: 1px solid rgb(var(--gray-light));
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .toc h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    color: var(--text-primary);
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-item {
+    margin-bottom: 0.5rem;
+  }
+
+  .toc-item.level-2 {
+    margin-left: 0;
+  }
+
+  .toc-item.level-3 {
+    margin-left: 1.5rem;
+  }
+
+  .toc-item.level-4 {
+    margin-left: 3rem;
+  }
+
+  .toc-item a {
+    display: block;
+    color: var(--text-primary);
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .toc-item a:hover {
+    background-color: rgb(var(--gray-light));
+    color: var(--accent);
+  }
+
+  .toc-item a.active {
+    color: var(--accent);
+    font-weight: 700;
+    background-color: rgba(var(--accent), 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .toc {
+      display: none;
+    }
+  }
+</style>

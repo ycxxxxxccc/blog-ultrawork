@@ -1,0 +1,81 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { getCollection } from "astro:content";
+import { getAllTags } from "../../utils";
+
+const allPosts = await getCollection("blog");
+const allTags = getAllTags(allPosts);
+
+const title = "All Tags";
+const description = "Browse all tags on the blog";
+---
+
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>All Tags</h1>
+      <div class="tags-grid">
+        {
+          allTags.map((tag) => (
+            <a href={`/tags/${tag}/`} class="tag-card">
+              <span class="tag-name">#{tag}</span>
+              <span class="tag-count">
+                {
+                  allPosts.filter((post) => post.data.tags?.includes(tag))
+                    .length
+                }{" "}
+                posts
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  h1 {
+    margin-bottom: 2rem;
+  }
+  .tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .tag-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border: 1px solid rgb(var(--gray-light));
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+  .tag-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+  }
+  .tag-name {
+    font-weight: 700;
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+  }
+  .tag-count {
+    font-size: 0.875rem;
+    color: rgb(var(--gray));
+  }
+</style>

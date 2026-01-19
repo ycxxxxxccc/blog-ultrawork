@@ -1,0 +1,183 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import FormattedDate from "./FormattedDate.astro";
+
+interface Props {
+  currentTags?: string[];
+  currentCategory?: string;
+  currentSlug: string;
+  limit?: number;
+}
+
+const {
+  currentTags = [],
+  currentCategory = "",
+  currentSlug,
+  limit = 3,
+} = Astro.props;
+
+// Get all published posts
+const allPosts = await getCollection("blog");
+
+// Find related posts based on shared tags or category
+const relatedPosts = allPosts
+  .filter((post) => post.id !== currentSlug) // Exclude current post
+  .filter((post) => post.data.featured) // Only featured posts
+  .map((post) => {
+    let score = 0;
+
+    // Score based on matching tags
+    if (post.data.tags && currentTags) {
+      const matchingTags = post.data.tags.filter((tag) =>
+        currentTags.includes(tag)
+      );
+      score += matchingTags.length * 2; // Each matching tag = 2 points
+    }
+
+    // Score based on matching category
+    if (post.data.category === currentCategory) {
+      score += 1; // Matching category = 1 point
+    }
+
+    return { post, score };
+  })
+  .filter((item) => item.score > 0) // Only posts with matches
+  .sort((a, b) => b.score - a.score) // Sort by relevance score
+  .slice(0, limit) // Limit results
+  .map((item) => item.post);
+---
+
+{
+  relatedPosts.length > 0 && (
+    <div class="related-posts">
+      <h3>Related Posts</h3>
+      <div class="posts-grid">
+        {relatedPosts.map((post) => (
+          <a href={`/blog/${post.id}/`} class="post-card">
+            {post.data.heroImage && (
+              <div class="post-image">
+                <Image
+                  width={600}
+                  height={400}
+                  src={post.data.heroImage}
+                  alt={post.data.title}
+                  loading="lazy"
+                />
+              </div>
+            )}
+            <div class="post-content">
+              <h4>{post.data.title}</h4>
+              <p class="post-description">{post.data.description}</p>
+              <div class="post-meta">
+                <FormattedDate date={post.data.pubDate} />
+                {post.data.category && (
+                  <span class="category">· {post.data.category}</span>
+                )}
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .related-posts {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-color);
+  }
+
+  .related-posts h3 {
+    margin: 0 0 1.5rem;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .post-card:hover {
+    box-shadow: var(--box-shadow);
+    transform: translateY(-4px);
+  }
+
+  .post-image {
+    width: 100%;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+  }
+
+  .post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .post-card:hover .post-image img {
+    transform: scale(1.05);
+  }
+
+  .post-content {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .post-content h4 {
+    margin: 0 0 0.5rem;
+    font-size: 1.125rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+
+  .post-description {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+  }
+
+  .post-meta .category {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  @media (max-width: 640px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

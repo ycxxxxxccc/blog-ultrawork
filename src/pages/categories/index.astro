@@ -1,0 +1,82 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { getCollection } from "astro:content";
+import { getAllCategories } from "../../utils";
+
+const allPosts = await getCollection("blog");
+const allCategories = getAllCategories(allPosts);
+
+const title = "All Categories";
+const description = "Browse all categories on the blog";
+---
+
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>All Categories</h1>
+      <div class="categories-grid">
+        {
+          allCategories.map((category) => (
+            <a href={`/categories/${category}/`} class="category-card">
+              <span class="category-name">{category}</span>
+              <span class="category-count">
+                {
+                  allPosts.filter((post) => post.data.category === category)
+                    .length
+                }{" "}
+                posts
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  h1 {
+    margin-bottom: 2rem;
+  }
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .category-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    border: 1px solid rgb(var(--gray-light));
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+  .category-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+  }
+  .category-name {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+  }
+  .category-count {
+    font-size: 0.875rem;
+    color: rgb(var(--gray));
+  }
+</style>

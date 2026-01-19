@@ -1,0 +1,103 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { getCollection } from "astro:content";
+import FormattedDate from "../../components/FormattedDate.astro";
+import { getAllCategories } from "../../utils";
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection("blog");
+  const allCategories = getAllCategories(allPosts);
+  return allCategories.map((category) => ({ params: { category } }));
+}
+
+const { category } = Astro.params;
+const allPosts = await getCollection("blog");
+const categoryPosts = allPosts.filter(
+  (post) => post.data.category === category
+);
+
+if (categoryPosts.length === 0) {
+  return Astro.redirect("/404");
+}
+
+const title = `Category: ${category}`;
+const description = `All blog posts in the "${category}" category`;
+---
+
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>{category}</h1>
+      <p class="category-count">
+        {categoryPosts.length} post{categoryPosts.length !== 1 ? "s" : ""}
+      </p>
+      <ul class="post-list">
+        {
+          categoryPosts
+            .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+            .map((post) => (
+              <li>
+                <a href={`/blog/${post.slug}/`} class="post-link">
+                  <h2>{post.data.title}</h2>
+                  <time class="post-date">
+                    <FormattedDate date={post.data.pubDate} />
+                  </time>
+                  <p class="post-description">{post.data.description}</p>
+                </a>
+              </li>
+            ))
+        }
+      </ul>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+  .category-count {
+    color: rgb(var(--gray));
+    margin-bottom: 2rem;
+    font-style: italic;
+  }
+  .post-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .post-link {
+    display: block;
+    text-decoration: none;
+    color: var(--text-primary);
+    border: 1px solid rgb(var(--gray-light));
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+  }
+  .post-link:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+  }
+  .post-link h2 {
+    margin: 0 0 0.5rem 0;
+    color: var(--accent);
+  }
+  .post-date {
+    font-size: 0.875rem;
+    color: rgb(var(--gray));
+  }
+  .post-description {
+    margin: 0.5rem 0 0 0;
+  }
+</style>

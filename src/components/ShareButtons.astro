@@ -1,0 +1,185 @@
+---
+const { url = "", title = "" } = Astro.props;
+
+const encodedUrl = encodeURIComponent(url);
+const encodedTitle = encodeURIComponent(title);
+const shareLinks = {
+  twitter: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
+  linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}`,
+  email: `mailto:?subject=${encodedTitle}&body=Check out this blog post: ${encodedUrl}`,
+};
+---
+
+<div class="share-buttons">
+  <a
+    href={shareLinks.twitter}
+    class="share-button twitter"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Share on Twitter/X"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path
+        d="M23 3a10.9 10.9 0 1 0-10.9 10.9 10.9 10.9 0 0 0 0 0 3a10.9 10.9 0 1 0 10.9-10.9 10.9-10.9 0 0 0 0-3a10.9 10.9 0 1 0-10.9 3.01a13 13 0 0 1 .99-2.13 0-2.05 4.27 3.69 5.98 3.69 1.81-3.38 7.38 7.38 3.61-1.94 0-1.37-.36-.5-.5-3.63 2.5-1.54-.5-1.54l-.27.14-.81-.27-1.62 4.65 5.98 3.69 1.81-3.38 7.38 7.38 3.61-1.94 0-1.37-.36-.5-.5-3.63 2.5-1.54-.5-1.54z"
+      ></path>
+    </svg>
+    <span class="share-label">Share</span>
+  </a>
+  <a
+    href={shareLinks.linkedin}
+    class="share-button linkedin"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Share on LinkedIn"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path
+        d="M20.447 20.447a2 1 0 0 0-2 0 2 0 0 0-2 0 2 0 0 0 2 0zM4 22h16a1 1 0 0 0 1 0v12a1 1 0 0 0-1 0-2 0-2 0v-12a1 1 0 0 0-1 0-2 0zm2.5-2.5a5.5 0 0 0-5.5 5.5 0 0 0 5.5 5.5 5.5-5.5a5.5 0 0 0-5.5 5.5 0 0 0 0a3.001 3.001 0 0 0-3.001 0-5.5A3.001 3.001 0 0 0 0 10.252 3.001 0 0 0 0 5.5zm3.25 2.5a5.5 0 0 0-5.5 5.5 0 0 0 5.5 5.5-5.5a5.5 0 0 0-5.5 5.5 0 0 0 0a3.001 3.001 0 0 0-3.001 0-5.5A3.001 3.001 0 0 0 0 10.252 3.001 0 0 0 0 5.5zM14.75 14a1 1 0 0 0 1 0 1v1a1 1 0 0 0-1 0-2 0-2 0v-1a1 1 0 0 0-1 0 0 0zm0 6a1 1 0 0 0 1 0v-4a1 1 0 0 0-1 0-2 0-2 0v-4a1 1 0 0 0-1 0 0 0z"
+      ></path>
+    </svg>
+    <span class="share-label">Share</span>
+  </a>
+  <a
+    href={shareLinks.email}
+    class="share-button email"
+    aria-label="Share via Email"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path
+        d="M4 4h16c1.1 0 1.1 0 1.1v16c0 .55-.45 1-1 1-1H4c-.55 0-1 .45-1 1-1V4c0-.55.45-1 1.1-1zm0 4c.55 0 1 .45 1 1 1v12c0 .55-.45 1-1 1 1h8c.55 0 1-.45 1-1 1v-8c0-.55-.45-1-1-1-1zm4 4c.55 0 1 .45 1 1 1v12c0 .55-.45 1-1 1 1h8c.55 0 1-.45 1-1 1v-8c0-.55-.45-1-1-1-1z"
+      ></path>
+    </svg>
+    <span class="share-label">Share</span>
+  </a>
+  <button
+    id="copy-link"
+    class="share-button copy"
+    aria-label="Copy link to clipboard"
+    onclick={(e) => {
+      navigator.clipboard.writeText(url);
+      const button = e.currentTarget;
+      const originalText = button.innerHTML;
+      button.innerHTML = "Copied!";
+      button.classList.add("copied");
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.classList.remove("copied");
+      }, 2000);
+    }}
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+      <path
+        d="M15.5 14l-4-4a2 2 0 0 0-2.83 2-2.83 0 0 0-.4.15-.42.42L6.5 9.58c-.26-.06-.5-.06-.77.06-.85-.22-.22-.15-.56-.15-.15-.83.83 0 0 0-.83.83 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.94L10.12 8.06c-.26.06-.5-.06-.77-.06-.85-.22-.22-.15-.56-.15-.15-.83.83 0 0 0-.83.83 0 0 0 0 0 0 0 0 0 0 0 0 0 1.94l1.94-1.94c.26.06.5.06.77.06.85.22.22.15.56.15.15.83.83 0 0 0 .83.83 0 0 0 .83.83 0 0 0 0 0 0 0 0 0 0 0 0 1.94l4-4c.26.06.5.06.77.06.85.22.22.15.56.15.15.83.83 0 0 0 .83.83 0 0 0 .83.83 0 0 0 0 0 0 0 0 0 0 0 .85.22.22 15.56 15.15.83.83 0 0 0 .83.83 0 0 0 0 0 0 0 0 0 0 0 1.94l-1.94-1.94c-.26.06-.5-.06-.77-.06-.85-.22-.22-.15-.56-.15-.15-.83.83 0 0 0 .83.83 0 0 0 .83.83 0 0 0 0 0 0 0 0 0 0 0 1.94"
+      ></path>
+    </svg>
+    <span class="share-label">Copy Link</span>
+  </button>
+</div>
+
+<style>
+  .share-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .share-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--bg-primary);
+    border: 1px solid rgb(var(--gray-light));
+    border-radius: 8px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+  }
+
+  .share-button:hover {
+    border-color: var(--accent);
+    background-color: rgba(var(--accent), 0.1);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+  }
+
+  .share-button:active {
+    transform: translateY(0);
+  }
+
+  .share-button.twitter {
+    color: #1da1f2;
+  }
+
+  .share-button.linkedin {
+    color: #0077b5;
+  }
+
+  .share-button.email {
+    color: #ea4335;
+  }
+
+  .share-button.copy.copied {
+    background-color: #10b981;
+    border-color: #10b981;
+    color: #fff;
+  }
+
+  .share-label {
+    display: none;
+  }
+
+  .share-button svg {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 600px) {
+    .share-buttons {
+      gap: 0.25rem;
+    }
+
+    .share-button {
+      padding: 0.375rem 0.5rem;
+      font-size: 0.813rem;
+    }
+  }
+</style>

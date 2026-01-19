@@ -1,0 +1,67 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const title = "404 - Page Not Found";
+const description = "The page you are looking for does not exist.";
+---
+
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <div class="error-page">
+        <h1>404</h1>
+        <h2>Page Not Found</h2>
+        <p>Sorry, the page you are looking for doesn't exist.</p>
+        <a href="/" class="back-home">← Back to Home</a>
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .error-page {
+    text-align: center;
+    padding: 4rem 1rem;
+  }
+  h1 {
+    font-size: 6rem;
+    margin: 0;
+    line-height: 1;
+    color: var(--accent);
+  }
+  h2 {
+    font-size: 2rem;
+    margin: 0.5rem 0 2rem 0;
+    color: var(--text-primary);
+  }
+  p {
+    font-size: 1.125rem;
+    color: rgb(var(--gray));
+    margin-bottom: 2rem;
+  }
+  .back-home {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  .back-home:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
+  .back-home:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+</style>
