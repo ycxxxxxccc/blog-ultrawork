@@ -1,0 +1,44 @@
+# GitLab CI/CD 配置文件 (用于公司GitLab部署)
+# 当部署到公司自托管GitLab时，将此文件重命名为 .gitlab-ci.yml 并提交
+
+stages:
+  - review
+
+variables:
+  # 智谱AI配置
+  ZAI_API_KEY: $ZAI_API_KEY
+  CONFIG__MODEL: "zai/glm-4.5-flash"
+  CONFIG__FALLBACK_MODELS: '["zai/glm-4.5"]'
+
+pr_review:
+  stage: review
+  image: codiumai/pr-agent:latest
+  script:
+    - echo "Running PR Agent review..."
+    - export ZAI_API_KEY="$ZAI_API_KEY"
+    - export CONFIG__MODEL="$CONFIG__MODEL"
+    - export CONFIG__FALLBACK_MODELS="$CONFIG__FALLBACK_MODELS"
+    # 审查PR
+    - python -m pr_agent.cli --pr_url "${CI_MERGE_REQUEST_URL}" review
+    # 描述PR
+    - python -m pr_agent.cli --pr_url "${CI_MERGE_REQUEST_URL}" describe
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  only:
+    - merge_requests
+
+pr_improve:
+  stage: review
+  image: codiumai/pr-agent:latest
+  script:
+    - echo "Running PR Agent improve..."
+    - export ZAI_API_KEY="$ZAI_API_KEY"
+    - export CONFIG__MODEL="$CONFIG__MODEL"
+    - export CONFIG__FALLBACK_MODELS="$CONFIG__FALLBACK_MODELS"
+    - python -m pr_agent.cli --pr_url "${CI_MERGE_REQUEST_URL}" improve
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_MERGE_REQUEST_COMMENT =~ /\/improve/'
+  only:
+    - merge_requests
+  allow_failure: true
