@@ -5,12 +5,14 @@ A modern, high-performance blog built with [Astro](https://astro.build), [TypeSc
 ## ✨ Features
 
 ### Core Functionality
+
 - ✅ **100/100 Lighthouse Performance** - Optimized for Core Web Vitals
 - ✅ **MDX Support** - Write rich, interactive content with MDX
 - ✅ **Syntax Highlighting** - Beautiful code blocks with Shiki
 - ✅ **SEO Optimized** - Open Graph, Twitter Cards, Schema.org structured data
 
 ### Content Management
+
 - ✅ **Tags System** - Tag filtering and tag pages
 - ✅ **Categories System** - Category filtering and category pages
 - ✅ **Search Functionality** - Client-side search with Fuse.js
@@ -18,6 +20,7 @@ A modern, high-performance blog built with [Astro](https://astro.build), [TypeSc
 - ✅ **Related Posts** - Content recommendations based on tags/categories
 
 ### User Experience
+
 - ✅ **Dark Mode** - Theme toggle with system preference detection
 - ✅ **Responsive Design** - Mobile-first design with hamburger menu
 - ✅ **Table of Contents** - Auto-generated navigation for long posts
@@ -25,6 +28,7 @@ A modern, high-performance blog built with [Astro](https://astro.build), [TypeSc
 - ✅ **Social Sharing** - Share buttons for Twitter, LinkedIn, Email
 
 ### Technical
+
 - ✅ **RSS Feed** - Automatic RSS feed generation
 - ✅ **Sitemap** - SEO-friendly sitemap
 - ✅ **TypeScript** - Full type safety
@@ -81,7 +85,6 @@ heroImage:
   alt: "Hero image"
 author: "Your Name"
 ---
-
 # Your content here
 ```
 
@@ -93,7 +96,7 @@ Edit `src/styles/global.css` to customize colors:
 
 ```css
 :root {
-  --accent: 209, 100%, 42%;  /* Accent color */
+  --accent: 209, 100%, 42%; /* Accent color */
   --text-primary: rgb(10, 10, 10);
   --text-secondary: rgb(80, 80, 80);
   --bg-primary: rgb(255, 255, 255);
@@ -106,20 +109,20 @@ Edit `astro.config.mjs` to update site URL:
 
 ```javascript
 export default defineConfig({
-  site: 'https://yourdomain.com',
+  site: "https://yourdomain.com",
   // ...
 });
 ```
 
 ## 📊 Commands
 
-| Command | Action |
-|---------|--------|
-| `npm run dev` | Start dev server at `localhost:4321` |
-| `npm run build` | Build production site |
-| `npm run preview` | Preview production build |
-| `npm run format` | Format code with Prettier |
-| `npm run lint` | Lint code with ESLint |
+| Command           | Action                               |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Start dev server at `localhost:4321` |
+| `npm run build`   | Build production site                |
+| `npm run preview` | Preview production build             |
+| `npm run format`  | Format code with Prettier            |
+| `npm run lint`    | Lint code with ESLint                |
 
 ## 🌐 Deployment
 
@@ -139,6 +142,7 @@ vercel
 ### Static Hosting
 
 Any static hosting service works:
+
 - GitHub Pages
 - Cloudflare Pages
 - AWS S3 + CloudFront
@@ -151,6 +155,37 @@ MIT
 ## 🤝 Contributing
 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
+
+## 🤖 PR-Agent (AI Code Review)
+
+This project is configured with [PR-Agent](https://github.com/qodo-ai/pr-agent) for automated code review using Zhipu AI (智谱AI).
+
+### Features
+
+- ✅ Automated code review on Pull Requests
+- ✅ AI-powered PR descriptions
+- ✅ Code improvement suggestions
+- ✅ Free tier using Zhipu AI `glm-4.5-flash`
+
+### Setup
+
+See [QUICKSTART.md](QUICKSTART.md) for deployment instructions.
+
+### Usage
+
+Once deployed, PR-Agent will automatically:
+
+- Review new Pull Requests
+- Generate PR summaries
+- Provide code improvement suggestions (trigger with `/improve`)
+
+### Commands
+
+- `/review` - Run code review (automatic on PR open)
+- `/describe` - Generate PR description (automatic on PR open)
+- `/improve` - Get code improvement suggestions
+- `/ask "question"` - Ask questions about the PR
+- `/update_changelog` - Update CHANGELOG.md
 
 ## 📚 Resources
 
