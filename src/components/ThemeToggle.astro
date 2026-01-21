@@ -44,60 +44,92 @@
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 21 12.79z"></path>
     </svg>
   </span>
 </button>
 
 <script is:inline>
-  // Theme management script
   (function () {
+    console.log("Theme script starting");
+
     // Get saved theme or use system preference
     const getTheme = () => {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme) {
-        return savedTheme;
+      try {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+          console.log("Found saved theme:", savedTheme);
+          return savedTheme;
+        }
+        const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        console.log("System prefers dark:", isDark);
+        return isDark ? "dark" : "light";
+      } catch (error) {
+        console.error("Error getting theme:", error);
+        return "light";
       }
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
     };
 
     // Apply theme to document
-    const applyTheme = (theme: "light" | "dark") => {
-      if (theme === "dark") {
-        document.documentElement.classList.add("dark");
-        document.documentElement.setAttribute("data-theme", "dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-        document.documentElement.setAttribute("data-theme", "light");
+    const applyTheme = (theme) => {
+      try {
+        console.log("Applying theme:", theme);
+        if (theme === "dark") {
+          document.documentElement.classList.add("dark");
+          document.documentElement.setAttribute("data-theme", "dark");
+          console.log("Added 'dark' class and attribute");
+        } else {
+          document.documentElement.classList.remove("dark");
+          document.documentElement.setAttribute("data-theme", "light");
+          console.log("Removed 'dark' class and set 'light' attribute");
+        }
+      } catch (error) {
+        console.error("Error applying theme:", error);
       }
     };
 
     // Initialize theme
+    console.log("Initializing theme...");
     applyTheme(getTheme());
 
     // Toggle theme on button click
-    const toggleButton = document.getElementById("theme-toggle");
-    if (toggleButton) {
+    const setupToggle = () => {
+      const toggleButton = document.getElementById("theme-toggle");
+      if (!toggleButton) {
+        console.error("Theme toggle button not found!");
+        return;
+      }
+
       toggleButton.addEventListener("click", () => {
-        const currentTheme =
-          document.documentElement.getAttribute("data-theme");
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        console.log("Current theme:", currentTheme);
         const newTheme = currentTheme === "dark" ? "light" : "dark";
+        console.log("Switching to:", newTheme);
         applyTheme(newTheme);
         localStorage.setItem("theme", newTheme);
       });
-    }
+    };
 
     // Listen for system theme changes
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (e) => {
+    const setupSystemListener = () => {
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
         const savedTheme = localStorage.getItem("theme");
         if (!savedTheme) {
+          console.log("System theme changed to:", e.matches ? "dark" : "light");
           applyTheme(e.matches ? "dark" : "light");
         }
       });
+    };
+
+    // Setup when DOM is ready
+    const setup = () => {
+      console.log("Setting up theme system");
+      setupToggle();
+      setupSystemListener();
+    };
+
+    // Run setup when DOM is loaded
+    document.addEventListener("DOMContentLoaded", setup);
   })();
 </script>
 
@@ -115,19 +147,23 @@
     color: var(--text-primary);
     transition: all 0.2s ease;
   }
+
   .theme-toggle:hover {
     background-color: rgb(var(--gray-light));
   }
+
   .theme-toggle:focus {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
+
   .theme-icon {
     display: none;
   }
-  /* Show sun icon in dark mode, moon in light mode */
-  :root.dark .theme-icon.sun,
-  :root:not(.dark) .theme-icon.moon {
+
+  /* Show sun icon in light mode, moon in dark mode */
+  :root:not(.dark) .theme-icon.sun,
+  :root.dark .theme-icon.moon {
     display: block;
   }
 </style>
