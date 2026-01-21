@@ -1,0 +1,39 @@
+name: PR Agent Review
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  pr_agent_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: PR Agent - Review
+        id: pragent-review
+        uses: qodo-ai/pr-agent@main
+        env:
+          # 智谱AI API配置
+          ZAI_API_KEY: ${{ secrets.ZAI_API_KEY }}
+          # 使用智谱AI的免费模型 glm-4.5-flash
+          CONFIG__MODEL: "zai/glm-4.5-flash"
+          CONFIG__FALLBACK_MODELS: '["zai/glm-4.5"]'
+          # GitHub Token (自动提供)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # 自动触发审查
+          GITHUB_ACTION_CONFIG__AUTO_REVIEW: "true"
+          GITHUB_ACTION_CONFIG__AUTO_DESCRIBE: "true"
+
+      - name: PR Agent - Improve (Manual)
+        if: github.event.comment == '/improve'
+        uses: qodo-ai/pr-agent@main
+        env:
+          ZAI_API_KEY: ${{ secrets.ZAI_API_KEY }}
+          CONFIG__MODEL: "zai/glm-4.5-flash"
+          CONFIG__FALLBACK_MODELS: '["zai/glm-4.5"]'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
