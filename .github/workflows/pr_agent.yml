@@ -44,8 +44,8 @@ jobs:
           # --- 选项 2: 智谱 AI ---
           OPENAI_API_BASE: "https://open.bigmodel.cn/api/coding/paas/v4"
           OPENAI_KEY: "${{ secrets.ZAI_API_KEY }}"
-          config.model: "glm-4.7"
-          config.fallback_models: '["glm-4.7"]'
+          config.model: "zhipu/glm-4.7"
+          config.fallback_models: '["zhipu/glm-4.7"]'
 
           # --- 选项 3: DeepSeek ---
           # config.model: "deepseek/deepseek-chat"
