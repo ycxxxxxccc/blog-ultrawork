@@ -1,0 +1,154 @@
+# PR-Agent 配置文件
+# 详细配置说明：https://qodo-merge-docs.qodo.ai/usage-guide/configuration_options/
+
+# ============================================
+# 核心配置
+# ============================================
+
+[config]
+# 模型配置
+# 支持的模型列表：https://qodo-merge-docs.qodo.ai/usage-guide/changing_a_model/
+model = "zai/glm-4.5-flash"
+fallback_models = ["zai/glm-4.5-flash"]
+
+# 上下文窗口大小（根据模型调整）
+# 智谱 GLM-4.5-Flash: 建议 4096-8192
+# DeepSeek: 建议 128000
+# GPT-4: 建议 128000
+custom_model_max_tokens = 4096
+
+# Git 提供商（自动检测，通常无需设置）
+# git_provider = "github"  # github, gitlab, bitbucket, azure_devops
+
+# 响应语言（默认英文）
+# 可选值: "en-US", "zh-CN", "ja-JP", "ko-KR", "es-ES", "fr-FR", "de-DE"
+response_language = "zh-CN"
+
+# ============================================
+# 工具配置
+# ============================================
+
+[pr_reviewer]
+# 自动审查配置
+require_security_review = true
+require_tests_review = true
+num_max_findings = 5
+
+# 自定义审查指令（公司编码规范）
+extra_instructions = """\
+遵循以下审查标准：
+
+安全要求：
+- 检查 SQL 注入、XSS、CSRF 等安全漏洞
+- 验证所有用户输入和参数
+- 确保敏感数据（密码、密钥）不被硬编码或日志记录
+- 检查依赖项中的已知安全漏洞
+
+代码质量：
+- 检查重复代码和冗余逻辑
+- 验证函数和变量的命名是否清晰
+- 确保适当的错误处理和日志记录
+- 检查代码注释是否准确和有用
+
+性能考虑：
+- 识别潜在的 N+1 查询问题
+- 检查不必要的数据库查询或 API 调用
+- 建议缓存和优化的机会
+"""
+
+[pr_description]
+# 自动生成 PR 描述
+generate_ai_title = true
+extra_instructions = "生成清晰全面的 PR 描述，包含：变更摘要、影响分析、测试建议"
+
+[pr_code_suggestions]
+# 代码建议配置
+num_code_suggestions_per_chunk = 6
+focus_only_on_problems = false
+suggestions_score_threshold = 7
+
+extra_instructions = """\
+代码改进建议应关注：
+
+- 代码可读性和可维护性
+- 最佳实践和设计模式
+- 性能优化机会
+- 错误处理的改进
+- TypeScript 类型安全
+"""
+
+[pr_test]
+# 自动生成单元测试（可选）
+num_code_suggestions_per_chunk = 3
+
+# ============================================
+# 忽略配置
+# ============================================
+
+[ignore]
+# 忽略生成的文件
+glob = [
+    "*.generated.*",
+    "*.d.ts",
+    "dist/*",
+    "node_modules/*",
+    ".astro/*",
+    "public/assets/*"
+]
+
+# 忽略特定模式（正则表达式）
+regex = [
+    ".*\\.min\\.js$",
+    ".*\\.min\\.css$",
+    ".*lock\\.json$"
+]
+
+# ============================================
+# 其他高级配置（可选）
+# ============================================
+
+# 启用调试日志（故障排查时使用）
+# config.verbosity_level = "2"
+
+# 大型 PR 处理策略
+# config.large_patch_policy = "clip"  # "clip" 或 "summary"
+
+# 输出相关配置到日志中
+# config.output_relevant_configurations = "true"
+
+# GitHub App 配置（如果使用 GitHub App 而非 GitHub Action）
+# [github_app]
+# pr_commands = ["/review", "/describe", "/improve", "/test", "/ask"]
+
+# GitLab 配置（如果部署到 GitLab）
+# [gitlab]
+# url = "https://gitlab.example.com"
+# personal_access_token = "glpat-xxxxxxxxxx"
+# auth_type = "oauth_token"  # or "private_token"
+# ssl_verify = true
+
+# Ollama 配置（如果使用本地模型）
+# [ollama]
+# api_base = "http://localhost:11434"
+
+# OpenAI 配置（如果使用 OpenAI）
+# [openai]
+# api_base = "https://api.openai.com/v1"
+# api_key = "sk-..."
+# api_type = "openai"  # or "azure"
+# api_version = "2023-05-15"
+
+# Anthropic 配置（如果使用 Claude）
+# [anthropic]
+# KEY = "sk-ant-..."
+
+# Azure OpenAI 配置
+# [openai]
+# api_type = "azure"
+# api_version = "2023-05-15"
+# api_base = "https://<resource-name>.openai.azure.com"
+# deployment_id = "<deployment-name>"
+
+# Google AI Studio 配置（Gemini）
+# [google_ai_studio]
+# gemini_api_key = "..."
