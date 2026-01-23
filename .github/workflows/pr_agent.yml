@@ -33,7 +33,7 @@ jobs:
           # ZAI_API_KEY: ${{ secrets.ZAI_API_KEY }}
 
           # 方式2: 使用OPENAI配置（推荐，OpenAI兼容API）
-          OPENAI__API_BASE: https://open.bigmodel.cn/api/paas/v4
+          OPENAI__API_BASE: https://open.bigmodel.cn/api/coding/paas/v4
           OPENAI__KEY: ${{ secrets.ZHIPU_API_KEY }}
 
           # --- 选项 3: DeepSeek ---
