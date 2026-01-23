@@ -28,9 +28,9 @@ PR-Agent 支持两种配置方式：
 
 ```toml
 [config]
-# 智谱 AI（推荐）
-model = "zai/glm-4.5-flash"
-fallback_models = ["zai/glm-4.5-flash"]
+# 智谱 AI（推荐，使用OpenAI兼容API）
+model = "openai/glm-4-flash"
+fallback_models = ["openai/glm-4-flash"]
 
 # 其他选项：
 # model = "deepseek/deepseek-chat"  # DeepSeek
@@ -38,6 +38,46 @@ fallback_models = ["zai/glm-4.5-flash"]
 # model = "anthropic/claude-3-opus-20240229"  # Claude
 # model = "gpt-4.1"  # OpenAI
 ```
+
+**智谱AI配置说明**：
+
+智谱AI提供OpenAI兼容的API，有两种配置方式：
+
+#### 方式1：使用OpenAI兼容端点（推荐）
+
+在 `.pr_agent.toml` 中添加：
+
+```toml
+[openai]
+api_base = "https://open.bigmodel.cn/api/paas/v4"
+api_key = "your-zhipu-api-key"
+api_type = "openai"
+
+[config]
+model = "openai/glm-4-flash"
+fallback_models = ["openai/glm-4-flash"]
+```
+
+**注意事项**：
+
+- 模型名需要 `openai/` 前缀，告诉LiteLLM使用OpenAI客户端
+- 端点URL：通用端点用 `/api/paas/v4`，Coding端点用 `/api/coding/paas/v4`
+
+#### 方式2：使用GitHub Secrets（生产环境推荐）
+
+在 `.github/workflows/pr_agent.yml` 中：
+
+```yaml
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  OPENAI__API_BASE: https://open.bigmodel.cn/api/paas/v4
+  OPENAI__KEY: ${{ secrets.ZHIPU_API_KEY }}
+```
+
+**注意事项**：
+
+- 环境变量使用**双下划线** `OPENAI__API_BASE`
+- Secret名称为 `ZHIPU_API_KEY`
 
 ### 步骤 3：添加 API Key 到 GitHub Secrets
 
@@ -48,7 +88,7 @@ fallback_models = ["zai/glm-4.5-flash"]
 
 | 提供商                 | Secret 名称        | 获取地址                                                             |
 | ---------------------- | ------------------ | -------------------------------------------------------------------- |
-| **智谱 AI**            | `ZAI_API_KEY`      | [open.bigmodel.cn](https://open.bigmodel.cn/usercenter/apikeys)      |
+| **智谱 AI**            | `ZHIPU_API_KEY`    | [open.bigmodel.cn](https://open.bigmodel.cn/usercenter/apikeys)      |
 | **DeepSeek**           | `DEEPSEEK_API_KEY` | [platform.deepseek.com](https://platform.deepseek.com/api_keys)      |
 | **Gemini** (Google)    | `GEMINI_API_KEY`   | [aistudio.google.com](https://aistudio.google.com/apikeys)           |
 | **Claude** (Anthropic) | `ANTHROPIC_KEY`    | [console.anthropic.com](https://console.anthropic.com/settings/keys) |
@@ -58,14 +98,31 @@ fallback_models = ["zai/glm-4.5-flash"]
 
 ### 步骤 4：配置 `.github/workflows/pr_agent.yml`
 
-编辑 `.github/workflows/pr_agent.yml`，取消注释对应提供商的 API Key：
+编辑 `.github/workflows/pr_agent.yml`，选择对应提供商的配置方式：
+
+#### 对于智谱 AI（OpenAI兼容方式）
+
+```yaml
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # 智谱 AI - OpenAI兼容配置
+  OPENAI__API_BASE: https://open.bigmodel.cn/api/paas/v4
+  OPENAI__KEY: ${{ secrets.ZHIPU_API_KEY }}
+```
+
+**重要**：
+
+- 使用**双下划线** `OPENAI__API_BASE` 和 `OPENAI__KEY`
+- Secret名称为 `ZHIPU_API_KEY`（或自定义名称）
+
+#### 对于其他提供商
 
 ```yaml
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # --- 选择一个，取消注释 ---
-  # ZAI_API_KEY: ${{ secrets.ZAI_API_KEY }}  # 智谱 AI
   # DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}  # DeepSeek
   # GOOGLE_AI_STUDIO.GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # Gemini
   # ANTHROPIC.KEY: ${{ secrets.ANTHROPIC_KEY }}  # Claude
@@ -325,8 +382,24 @@ env:
 # ❌ 错误格式
 model = "glm-4.5-flash"
 
-# ✅ 正确格式（需要提供商前缀）
-model = "zai/glm-4.5-flash"
+# ✅ 正确格式（智谱AI使用OpenAI兼容配置）
+model = "openai/glm-4-flash"
+```
+
+**智谱AI特殊说明**：
+
+智谱AI通过OpenAI兼容API使用，需要在模型名前加 `openai/` 前缀：
+
+```toml
+[config]
+model = "openai/glm-4-flash"  # 通用端点
+# model = "openai/glm-4-flash"  # Coding端点（需要编码套餐）
+
+[openai]
+api_base = "https://open.bigmodel.cn/api/paas/v4"  # 通用端点
+# api_base = "https://open.bigmodel.cn/api/coding/paas/v4"  # Coding端点
+api_key = "your-zhipu-api-key"
+api_type = "openai"
 ```
 
 完整模型列表：[模型文档](https://qodo-merge-docs.qodo.ai/usage-guide/changing_a_model/)
@@ -335,10 +408,17 @@ model = "zai/glm-4.5-flash"
 
 **解决方案**：
 
-1. 确认 Secret 名称正确（如：`ZAI_API_KEY`）
+1. **智谱AI**：确认 Secret 名称正确（如：`ZHIPU_API_KEY` 或 `OPENAI__KEY`）
 2. 确认 Secret 值没有多余空格
 3. 重新保存 Secret
 4. 等待 1-2 分钟后重新触发 workflow
+
+**检查GitHub Secrets**：
+
+```bash
+# 查看当前仓库的 Secrets（需要GitHub CLI）
+gh secret list
+```
 
 ### 问题 4：错误 "Rate limit exceeded"
 

@@ -28,8 +28,13 @@ jobs:
           # --- 选项 1: OpenAI ---
           # OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
 
-          # --- 选项 2: 智谱 AI ---
-          ZAI_API_KEY: ${{ secrets.ZAI_API_KEY }}
+          # --- 选项 2: 智谱 AI（OpenAI兼容API）---
+          # 方式1: 使用ZAI_API_KEY（如果LiteLLM原生支持）
+          # ZAI_API_KEY: ${{ secrets.ZAI_API_KEY }}
+
+          # 方式2: 使用OPENAI配置（推荐，OpenAI兼容API）
+          OPENAI__API_BASE: https://open.bigmodel.cn/api/paas/v4
+          OPENAI__KEY: ${{ secrets.ZHIPU_API_KEY }}
 
           # --- 选项 3: DeepSeek ---
           # DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}

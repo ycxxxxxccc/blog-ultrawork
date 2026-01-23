@@ -8,8 +8,12 @@
 [config]
 # 模型配置
 # 支持的模型列表：https://qodo-merge-docs.qodo.ai/usage-guide/changing_a_model/
-model = "zai/glm-4.5-flash"
-fallback_models = ["zai/glm-4.5-flash"]
+#
+# 智谱AI配置说明：
+# 智谱AI提供OpenAI兼容API，需要使用openai前缀来告诉LiteLLM使用OpenAI客户端
+# 详见: https://docs.litellm.ai/docs/providers/openai_compatible
+model = "openai/glm-4-flash"
+fallback_models = ["openai/glm-4-flash"]
 
 # 上下文窗口大小（根据模型调整）
 # 智谱 GLM-4.5-Flash: 建议 4096-8192
@@ -132,11 +136,13 @@ regex = [
 # api_base = "http://localhost:11434"
 
 # OpenAI 配置（如果使用 OpenAI）
-# [openai]
-# api_base = "https://api.openai.com/v1"
-# api_key = "sk-..."
-# api_type = "openai"  # or "azure"
-# api_version = "2023-05-15"
+[openai]
+# 智谱AI OpenAI兼容端点
+# 通用端点: https://open.bigmodel.cn/api/paas/v4
+# Coding端点: https://open.bigmodel.cn/api/coding/paas/v4 (仅用于编码套餐)
+api_base = "https://open.bigmodel.cn/api/paas/v4"
+api_key = "fed973c3bb23450b97dee7c278c665c7.wRInxdhCA9R3KinB"
+api_type = "openai"  # or "azure"
 
 # Anthropic 配置（如果使用 Claude）
 # [anthropic]

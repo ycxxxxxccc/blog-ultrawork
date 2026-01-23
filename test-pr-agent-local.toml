@@ -1,0 +1,37 @@
+# 本地测试配置文件
+# 用于在本地测试 PR-Agent 与智谱AI的连接
+
+[config]
+# 模型配置
+model = "openai/glm-4-flash"
+fallback_models = ["openai/glm-4-flash"]
+
+# 上下文窗口大小
+custom_model_max_tokens = 4096
+
+# 响应语言
+response_language = "zh-CN"
+
+# 智谱AI OpenAI兼容端点
+[openai]
+api_base = "https://open.bigmodel.cn/api/paas/v4"
+api_key = "fed973c3bb23450b97dee7c278c665c7.wRInxdhCA9R3KinB"
+api_type = "openai"
+
+# 本地Git提供商配置（可选）
+[git_provider]
+# provider = "github"  # 如果使用GitHub CLI测试
+
+# 工具配置
+[pr_reviewer]
+require_security_review = true
+require_tests_review = true
+num_max_findings = 3
+
+[pr_description]
+generate_ai_title = true
+
+[pr_code_suggestions]
+num_code_suggestions_per_chunk = 3
+focus_only_on_problems = false
+suggestions_score_threshold = 7
